@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate and Link
+import { useNavigate, Link } from 'react-router-dom';
 import './App.css';
 
 const Login = ({ onLogin }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             await onLogin(email, password);
-            setError(''); // Clear any previous errors
-            navigate('/dashboard'); // Redirect after login ✅
+            setError('');
+            navigate('/dashboard');
         } catch (err) {
-            setError('Login failed. Please check your credentials.'); // Set error message
+            setError('Login failed. Please check your credentials.');
         }
     };
 

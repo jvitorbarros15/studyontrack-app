@@ -4,7 +4,7 @@ import { db } from "./firebase"; // Firestore import
 import { doc, setDoc } from "firebase/firestore";
 import "./AddCourse.css"; // New CSS for better styling
 
-const AddCourse = ({ onAddCourse, userId, existingCourses }) => {
+const AddCourse = ({ onAddCourse, userId, existingCourses = [] }) => { // ✅ Fix here
   const [courseId, setCourseId] = useState("");
   const [courseName, setCourseName] = useState("");
   const [error, setError] = useState("");
