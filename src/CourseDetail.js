@@ -1,13 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Chart from "chart.js/auto";
 import "./App.css";
 
-const CourseDetail = ({ courses }) => {
+const CourseDetail = ({ courses, onUpdateScores, onRemoveCourse }) => {
     const { courseId } = useParams();
     const course = courses.find(c => c.courseId === courseId);
     const chartRef = useRef(null);
     const canvasRef = useRef(null);
+    const [homeworkScore, setHomeworkScore] = useState('');
+    const [examScore, setExamScore] = useState('');
+    const [chartData, setChartData] = useState({});
 
     useEffect(() => {
         if (!course || !canvasRef.current) return;
@@ -116,7 +119,25 @@ const CourseDetail = ({ courses }) => {
                 chartRef.current.destroy();
             }
         };
-    }, [course]);
+    }, [course, chartData]);
+
+    const handleAddHomeworkScore = (e) => {
+        e.preventDefault();
+        if (homeworkScore) {
+            course.homeworkScores.push(Number(homeworkScore));
+            setHomeworkScore('');
+            setChartData({});
+        }
+    };
+
+    const handleAddExamScore = (e) => {
+        e.preventDefault();
+        if (examScore) {
+            course.examScores.push(Number(examScore));
+            setExamScore('');
+            setChartData({});
+        }
+    };
 
     if (!course) {
         return <h2 className="error-message">Course not found!</h2>;
@@ -141,7 +162,29 @@ const CourseDetail = ({ courses }) => {
                 <p><strong>Average Exam Score:</strong> {avgExam}%</p>
                 <p className="improvement-tip">{improvementMessage}</p>
             </div>
+            <form onSubmit={handleAddHomeworkScore}>
+                <input
+                    type="number"
+                    placeholder="Add Homework Score"
+                    value={homeworkScore}
+                    onChange={(e) => setHomeworkScore(e.target.value)}
+                    required
+                />
+                <button type="submit">Add Homework Score</button>
+            </form>
+            <form onSubmit={handleAddExamScore}>
+                <input
+                    type="number"
+                    placeholder="Add Exam Score"
+                    value={examScore}
+                    onChange={(e) => setExamScore(e.target.value)}
+                    required
+                />
+                <button type="submit">Add Exam Score</button>
+            </form>
             <Link to="/dashboard" className="back-button">Back to Dashboard</Link>
+            <Link to="/update-scores" className="update-scores-button" style={{ marginLeft: '20px', padding: '10px 15px', backgroundColor: '#28a745', color: 'white', borderRadius: '5px', textDecoration: 'none' }}>Upload Assignments</Link>
+            <button onClick={() => onRemoveCourse(courseId)} style={{ marginLeft: '20px', padding: '10px 15px', backgroundColor: '#dc3545', color: 'white', borderRadius: '5px', border: 'none' }}>Remove Course</button>
         </div>
     );
 };

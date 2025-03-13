@@ -4,6 +4,8 @@ import Chart from "chart.js/auto";
 import "./App.css";
 import Login from "./Login";
 import CourseDetail from "./CourseDetail"; // Import Course Details Page
+import AddCourse from "./AddCourse"; // Import AddCourse component
+import UpdateScores from "./UpdateScores"; // Import UpdateScores component
 
 const sampleCourses = [
     { 
@@ -57,23 +59,55 @@ function App() {
       console.log("User logged out");
   };
 
+  const handleAddCourse = (newCourse) => {
+      setGrades((prevGrades) => [...prevGrades, newCourse]);
+  };
+
+  const handleUpdateScores = (scores) => {
+      scores.forEach(({ type, score }) => {
+          // Assuming the type is in the format "Homework: CourseID" or "Exam: CourseID"
+          const [scoreType, courseId] = type.split(':');
+          const course = grades.find(c => c.courseId === courseId.trim());
+          if (course) {
+              if (scoreType.trim() === 'Homework') {
+                  course.homeworkScores.push(score);
+              } else if (scoreType.trim() === 'Exam') {
+                  course.examScores.push(score);
+              }
+          }
+      });
+      setGrades([...grades]); // Update the state to trigger re-render
+  };
+
+  const handleRemoveCourse = (courseId) => {
+      setGrades((prevGrades) => prevGrades.filter(course => course.courseId !== courseId));
+  };
+
   return (
       <Router>
           <div className="App">
-              {/* HEADER WITH LOGOUT BUTTON */}
+              {/* HEADER WITH LOGOUT BUTTON AND HOME BUTTON */}
               <header className="App-header">
                   <h1>Student Progress Tracker</h1>
+                  <Link to="/dashboard" className="course-button" style={{ marginRight: '20px' }}>Home</Link>
                   {isLoggedIn && (
-                      <button className="logout-button" onClick={handleLogout}>
-                          Logout
-                      </button>
+                      <>
+                          <button className="logout-button" onClick={handleLogout}>
+                              Logout
+                          </button>
+                          <Link to="/add-course" className="course-button" style={{ marginLeft: '20px' }}>
+                              Add Course
+                          </Link>
+                      </>
                   )}
               </header>
               
               <Routes>
                   <Route path="/login" element={<Login onLogin={handleLogin} />} />
                   <Route path="/dashboard" element={isLoggedIn ? <Dashboard grades={grades} /> : <Navigate to="/login" />} />
-                  <Route path="/course/:courseId" element={isLoggedIn ? <CourseDetail courses={grades} /> : <Navigate to="/login" />} />
+                  <Route path="/course/:courseId" element={isLoggedIn ? <CourseDetail courses={grades} onUpdateScores={handleUpdateScores} onRemoveCourse={handleRemoveCourse} /> : <Navigate to="/login" />} />
+                  <Route path="/add-course" element={<AddCourse onAddCourse={handleAddCourse} />} />
+                  <Route path="/update-scores" element={<UpdateScores onUpdateScores={handleUpdateScores} />} />
                   <Route path="/" element={<Navigate to="/login" />} />
               </Routes>
           </div>
