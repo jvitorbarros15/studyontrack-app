@@ -1,28 +1,24 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate and Link
-import './App.css';
 
-const Login = ({ onLogin }) => {
+const Register = ({ onRegister }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // Initialize navigate
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await onLogin(email, password);
+            await onRegister(email, password);
             setError(''); // Clear any previous errors
-            navigate('/dashboard'); // Redirect after login ✅
         } catch (err) {
-            setError('Login failed. Please check your credentials.'); // Set error message
+            setError('Registration failed. Please try again.'); // Set error message
         }
     };
 
     return (
-        <div className="login-container">
-            <h1>Login</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div className="register-container">
+            <h1>Register</h1>
+            {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -38,11 +34,10 @@ const Login = ({ onLogin }) => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Login</button>
+                <button type="submit">Sign Up</button>
             </form>
-            <p>Don't have an account? <Link to="/register">Sign Up</Link></p>
         </div>
     );
 };
 
-export default Login;
+export default Register; 
